@@ -11,10 +11,12 @@ datasource db {
 }
 
 model Player {
-  id        Int      @id @default(autoincrement())
+  id        Int       @id @default(autoincrement()) @db.UnsignedSmallInt
   firstName String
   lastName  String
-  email     String   @unique
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  email     String    @unique
+  createdAt DateTime  @default(now())
+  updatedAt DateTime? @updatedAt
+
+  @@map(name: "player")
 }
