@@ -1,8 +1,11 @@
 import '../styles/globals.css';
-import type { AppProps } from 'next/app';
 import Head from 'next/head';
+import { withTRPC } from '@trpc/next';
+import { AppType } from 'next/dist/shared/lib/utils';
+import { AppRouter } from './api/[trpc]';
+// import type { AppProps } from 'next/app';
 
-export default function MyApp({ Component, pageProps }: AppProps) {
+const MyApp: AppType = ({ Component, pageProps }) => {
     return (
         <>
             <Head>
@@ -14,3 +17,12 @@ export default function MyApp({ Component, pageProps }: AppProps) {
         </>
     );
 };
+
+export default withTRPC<AppRouter>({
+    config({ ctx }) {
+        return {
+            url: 'http://localhost:3000/api'
+        };
+    },
+    ssr: true
+})(MyApp);
