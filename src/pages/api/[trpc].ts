@@ -1,19 +1,13 @@
 import * as trpc from '@trpc/server';
 import * as trpcNext from '@trpc/server/adapters/next';
 import { z } from 'zod';
+import { dbClient } from '~/utils/dbConnector';
 
-export const appRouter = trpc
-    .router()
-    .query('hello', {
-        input: z
-            .object({
-                text: z.string().nullish()
-            })
-            .nullish(),
-        resolve({ input }) {
-            return {
-                greeting: `Hello ${input?.text ?? 'random player'}, ready to make your picks?`
-            };
+export const appRouter = trpc.router()
+    .query('getPlayerById', {
+        input: z.number(),
+        async resolve({ input }) {
+            return await dbClient.player.findUnique({where: {id: input}});
         }
     });
 
