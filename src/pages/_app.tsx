@@ -18,8 +18,15 @@ const MyApp: AppType = ({ Component, pageProps }) => {
 };
 
 export default withTRPC<AppRouter>({
-    config() {
-        return { url: 'http://localhost:3000/api' };
+    config({ ctx }) {
+        // ctx?.res?.setHeader('Cache-control', 's-maxage=1, stale-while-revalidate=86400');
+
+        return { 
+            url: `http://localhost:3000/api`,
+            headers: {
+                'x-ssr': '1'
+            }
+        };
     },
     ssr: true
 })(MyApp);
