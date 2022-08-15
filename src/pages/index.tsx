@@ -1,16 +1,16 @@
-import type { GetStaticProps, NextPage, PreviewData } from 'next';
+import type { GetStaticProps, NextPage } from 'next';
 import Head from 'next/head';
-import { ParsedUrlQuery } from 'querystring';
 import { dbClient } from '~/utils/dbConnector';
 
-interface Player {
-    id: number;
-    firstName: string;
-    lastName: string;
-    email: string;
+interface PlayerData {
+    player: {
+        firstName: string;
+        lastName: string;
+        email: string;
+    } | null
 }
 
-const Home: NextPage<Player> = (player) => {
+const Home: NextPage<PlayerData> = ({ player }) => {
 
     return (
         <>
@@ -27,13 +27,15 @@ const Home: NextPage<Player> = (player) => {
 
 export default Home;
 
-export const getStaticProps: GetStaticProps<Player, ParsedUrlQuery, PreviewData> = async () => {
-    const player = await dbClient.player.findUnique({ where: { id: 1}});
+export const getStaticProps: GetStaticProps = async () => {
+    const player = await dbClient.player.findUnique({ 
+        where: { id: 1 },
+        select: {
+            firstName: true,
+            lastName: true,
+            email: true
+        }
+    });
 
-    return { props: {
-        id: player?.id,
-        firstName: player?.firstName,
-        lastName: player?.lastName,
-        email: player?.email
-    } as Player };
+    return { props: { player } };
 };
