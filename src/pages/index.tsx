@@ -1,16 +1,27 @@
-import type { GetStaticProps, NextPage } from 'next';
+import type { GetStaticProps, InferGetStaticPropsType, NextPage } from 'next';
 import Head from 'next/head';
 import { dbClient } from '~/utils/dbConnector';
 
-interface PlayerData {
-    player: {
-        firstName: string;
-        lastName: string;
-        email: string;
-    } | null
-}
+type Player = {
+    firstName: string;
+    lastName: string;
+    email: string;
+} | null;
 
-const Home: NextPage<PlayerData> = ({ player }) => {
+export const getStaticProps: GetStaticProps = async () => {
+    const player = await dbClient.player.findUnique({ 
+        where: { id: 1 },
+        select: {
+            firstName: true,
+            lastName: true,
+            email: true
+        }
+    }) as Player;
+
+    return { props: { player } };
+};
+
+const Home: NextPage = ({ player }: InferGetStaticPropsType<typeof getStaticProps>) => {
 
     return (
         <>
@@ -24,18 +35,4 @@ const Home: NextPage<PlayerData> = ({ player }) => {
     );
 };
 
-
 export default Home;
-
-export const getStaticProps: GetStaticProps = async () => {
-    const player = await dbClient.player.findUnique({ 
-        where: { id: 1 },
-        select: {
-            firstName: true,
-            lastName: true,
-            email: true
-        }
-    });
-
-    return { props: { player } };
-};
